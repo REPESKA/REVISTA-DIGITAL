@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --c1: #00f5d4; --c2: #7b2ff7; --c3: #ff3d71; --c4: #0d0d1a;
+    --c5: #111128; --c6: #1a1a35; --c7: #252545; --ct: #e0e0ff;
+    --cs: #8888bb; --cb: rgba(0,245,212,0.12);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--c4); color:var(--ct); min-height:100vh; overflow-x:hidden; }
+
+  /* SCREENS */
+  .screen { display:none; }
+  .screen.active { display:block; }
+
+  /* ── NAVBAR ── */
+  .navbar {
+    background: rgba(13,13,26,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,245,212,0.15);
+    padding: 0 24px;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top:0; z-index:100;
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 800;
+    background: linear-gradient(135deg, var(--c1), #7b2ff7);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    cursor: pointer;
+  }
+  .nav-actions { display: flex; gap:12px; align-items: center; }
+  .btn {
+    padding: 7px 18px; border-radius: 8px; font-size: 13px;
+    font-weight: 500; cursor: pointer; border: none; font-family: inherit;
+    transition: all 0.2s;
+  }
+  .btn-ghost {
+    background: transparent; color: var(--cs);
+    border: 1px solid rgba(136,136,187,0.3);
+  }
+  .btn-ghost:hover { border-color: var(--c1); color: var(--c1); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--c1), #00c4a8);
+    color: #000; font-weight: 600;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: var(--c1);
+    border: 1px solid var(--c1);
+  }
+  .btn-outline:hover { background: rgba(0,245,212,0.1); }
+  .user-dot {
+    width:32px; height:32px; border-radius:50%;
+    background: linear-gradient(135deg,var(--c2),var(--c3));
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:600; cursor:pointer;
+  }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    min-height:100vh;
+    background: radial-gradient(ellipse at 20% 50%, rgba(123,47,247,0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0,245,212,0.15) 0%, transparent 50%),
+                var(--c4);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .login-wrap { width:100%; max-width:440px; padding:24px; }
+  .login-hero { text-align:center; margin-bottom:40px; }
+  .login-hero .big-logo {
+    font-family:'Syne',sans-serif; font-size:48px; font-weight:800;
+    background: linear-gradient(135deg,var(--c1),var(--c2),var(--c3));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    line-height:1; margin-bottom:8px;
+  }
+  .login-hero p { color:var(--cs); font-size:14px; }
+  .login-card {
+    background: var(--c6);
+    border: 1px solid rgba(0,245,212,0.2);
+    border-radius:16px; padding:32px;
+  }
+  .tabs { display:flex; gap:0; margin-bottom:28px; border-radius:8px; overflow:hidden; background:var(--c7); }
+  .tab {
+    flex:1; padding:10px; text-align:center; cursor:pointer;
+    font-size:13px; font-weight:500; color:var(--cs); transition:all 0.2s;
+    border:none; background:transparent; font-family:inherit;
+  }
+  .tab.active { background:var(--c1); color:#000; font-weight:600; }
+  .form-group { margin-bottom:16px; }
+  .form-group label { display:block; font-size:12px; color:var(--cs); margin-bottom:6px; font-weight:500; }
+  .form-group input, .form-group select {
+    width:100%; background:var(--c7); border:1px solid rgba(136,136,187,0.3);
+    border-radius:8px; padding:10px 14px; color:var(--ct);
+    font-size:14px; font-family:inherit; outline:none; transition:border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color:var(--c1); }
+  .form-group select { cursor:pointer; }
+  .form-group option { background:var(--c5); }
+  .google-btn {
+    width:100%; padding:11px; background:white; color:#333;
+    border:none; border-radius:8px; font-size:14px; font-weight:500;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    gap:10px; margin-bottom:16px; font-family:inherit;
+    transition: box-shadow 0.2s;
+  }
+  .google-btn:hover { box-shadow: 0 4px 20px rgba(255,255,255,0.15); }
+  .divider { text-align:center; color:var(--cs); font-size:12px; margin:16px 0; position:relative; }
+  .divider::before, .divider::after {
+    content:''; position:absolute; top:50%; width:40%; height:1px;
+    background:rgba(136,136,187,0.2);
+  }
+  .divider::before { left:0; } .divider::after { right:0; }
+  .submit-btn { width:100%; padding:12px; background:linear-gradient(135deg,var(--c1),#00c4a8); color:#000; font-weight:700; font-size:15px; border:none; border-radius:8px; cursor:pointer; font-family:inherit; transition:all 0.2s; }
+  .submit-btn:hover { opacity:0.9; }
+  .tag-grid { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+  .seg-tag {
+    padding:5px 12px; border-radius:20px; font-size:12px; cursor:pointer;
+    border:1px solid rgba(136,136,187,0.3); color:var(--cs); transition:all 0.15s;
+    background:transparent;
+  }
+  .seg-tag.selected { border-color:var(--c1); color:var(--c1); background:rgba(0,245,212,0.1); }
+
+  /* ── MAIN DASHBOARD ── */
+  #main-screen { background:var(--c4); }
+  .main-content { padding:24px; max-width:1100px; margin:0 auto; }
+
+  /* HERO BANNER */
+  .hero-banner {
+    background: linear-gradient(135deg,rgba(123,47,247,0.3),rgba(0,245,212,0.2));
+    border:1px solid rgba(0,245,212,0.2); border-radius:20px;
+    padding:32px; margin-bottom:28px; position:relative; overflow:hidden;
+  }
+  .hero-banner::before {
+    content:''; position:absolute; right:-40px; top:-40px;
+    width:200px; height:200px; background:radial-gradient(circle,rgba(0,245,212,0.15),transparent);
+    border-radius:50%;
+  }
+  .hero-banner h1 { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; line-height:1.2; margin-bottom:8px; }
+  .hero-banner h1 span { color:var(--c1); }
+  .hero-banner p { color:var(--cs); font-size:14px; max-width:500px; }
+  .hero-stats { display:flex; gap:24px; margin-top:20px; }
+  .h-stat { font-size:12px; color:var(--cs); }
+  .h-stat strong { display:block; font-size:20px; font-weight:700; color:var(--ct); }
+
+  /* SECTION HEADERS */
+  .sec-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .sec-header h2 { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; }
+  .sec-header a { font-size:12px; color:var(--c1); cursor:pointer; text-decoration:none; }
+
+  /* SEGMENT GRID */
+  .seg-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; margin-bottom:32px; }
+  .seg-card {
+    background:var(--c6); border:1px solid rgba(136,136,187,0.15);
+    border-radius:12px; padding:14px 12px; cursor:pointer;
+    transition:all 0.2s; text-align:center;
+  }
+  .seg-card:hover { border-color:var(--c1); background:var(--c7); transform:translateY(-2px); }
+  .seg-card .icon { font-size:24px; margin-bottom:6px; }
+  .seg-card .sname { font-size:11px; font-weight:500; color:var(--cs); line-height:1.3; }
+
+  /* ARTICLE CARDS */
+  .articles-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:28px; }
+  @media(max-width:600px) { .articles-grid { grid-template-columns:1fr; } }
+  .art-card {
+    background:var(--c6); border:1px solid rgba(136,136,187,0.15);
+    border-radius:14px; padding:18px; cursor:pointer; transition:all 0.2s;
+    position:relative; overflow:hidden;
+  }
+  .art-card:hover { border-color:rgba(0,245,212,0.3); transform:translateY(-2px); }
+  .art-card.featured { border-color:rgba(0,245,212,0.4); }
+  .art-card.featured::before {
+    content:'DESTAQUE'; position:absolute; top:12px; right:12px;
+    font-size:9px; font-weight:700; color:var(--c1);
+    background:rgba(0,245,212,0.15); padding:3px 8px; border-radius:4px;
+  }
+  .art-seg-badge {
+    display:inline-block; font-size:10px; font-weight:600;
+    padding:3px 10px; border-radius:4px; margin-bottom:10px;
+    background:rgba(123,47,247,0.2); color:#a88aff;
+  }
+  .art-card h3 { font-size:15px; font-weight:600; line-height:1.4; margin-bottom:6px; }
+  .art-card p { font-size:12px; color:var(--cs); line-height:1.5; }
+  .art-meta { display:flex; align-items:center; gap:12px; margin-top:12px; font-size:11px; color:var(--cs); }
+  .art-meta span { display:flex; align-items:center; gap:4px; }
+
+  /* SHARE BOX */
+  .share-box {
+    background: linear-gradient(135deg,rgba(123,47,247,0.25),rgba(255,61,113,0.15));
+    border:1px solid rgba(123,47,247,0.4); border-radius:16px;
+    padding:24px; margin-bottom:28px;
+  }
+  .share-box h3 { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin-bottom:6px; }
+  .share-box p { font-size:13px; color:var(--cs); margin-bottom:16px; }
+  .share-link-box {
+    background:var(--c7); border:1px solid rgba(0,245,212,0.3);
+    border-radius:8px; padding:10px 14px;
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:13px; color:var(--c1); margin-bottom:14px;
+  }
+  .copy-btn {
+    background:var(--c1); color:#000; border:none; border-radius:6px;
+    padding:5px 12px; font-size:12px; font-weight:600; cursor:pointer;
+    font-family:inherit;
+  }
+  .share-platforms { display:flex; gap:10px; flex-wrap:wrap; }
+  .plat-btn {
+    padding:8px 16px; border-radius:8px; font-size:12px; font-weight:600;
+    cursor:pointer; border:none; font-family:inherit;
+  }
+
+  /* PROFILE SCREEN */
+  #profile-screen { background:var(--c4); }
+  .profile-header {
+    background:linear-gradient(135deg,var(--c6),var(--c5));
+    border-bottom:1px solid rgba(0,245,212,0.15); padding:24px;
+  }
+  .profile-av {
+    width:64px; height:64px; border-radius:50%;
+    background:linear-gradient(135deg,var(--c2),var(--c3));
+    display:flex; align-items:center; justify-content:center;
+    font-size:24px; font-weight:700; margin-bottom:12px;
+  }
+  .profile-name { font-family:'Syne',sans-serif; font-size:22px; font-weight:700; }
+  .profile-code {
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(0,245,212,0.1); border:1px solid rgba(0,245,212,0.3);
+    border-radius:8px; padding:6px 14px; font-size:13px; color:var(--c1);
+    margin-top:8px;
+  }
+  .stats-row { display:flex; gap:16px; margin-top:16px; }
+  .st { text-align:center; }
+  .st strong { display:block; font-size:22px; font-weight:700; color:var(--c1); }
+  .st span { font-size:11px; color:var(--cs); }
+
+  /* TIPS SECTION */
+  .tips-section { margin-bottom:28px; }
+  .tip-cat { font-size:12px; font-weight:600; color:var(--c1); margin-bottom:8px; margin-top:16px; text-transform:uppercase; letter-spacing:1px; }
+  .tip-item {
+    background:var(--c6); border-left:3px solid var(--c1);
+    border-radius:0 8px 8px 0; padding:10px 14px;
+    font-size:13px; color:var(--cs); margin-bottom:6px; line-height:1.5;
+  }
+
+  /* CMS RECS */
+  .cms-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media(max-width:550px) { .cms-grid { grid-template-columns:1fr; } }
+  .cms-card {
+    background:var(--c6); border:1px solid rgba(136,136,187,0.2);
+    border-radius:12px; padding:16px;
+  }
+  .cms-card.rec { border-color:rgba(0,245,212,0.35); }
+  .cms-name { font-weight:700; font-size:15px; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+  .rec-badge { font-size:9px; background:rgba(0,245,212,0.15); color:var(--c1); padding:2px 8px; border-radius:4px; font-weight:700; }
+  .cms-type { font-size:11px; color:var(--cs); margin-bottom:8px; }
+  .cms-price { font-size:12px; color:#a88aff; }
+
+  /* TOAST NOTIFICATION */
+  .toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+  .toast {
+    background: rgba(26, 26, 53, 0.95);
+    border: 1px solid var(--c1);
+    color: var(--ct);
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: auto;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .toast-icon {
+    color: var(--c1);
+  }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ── -->
+<div id="login-screen" class="screen active">
+  <div class="login-wrap">
+    <div class="login-hero">
+      <div class="big-logo">Oh Futuro</div>
+      <p>A revista digital do que está por vir</p>
+    </div>
+    <div class="login-card">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('login')">Entrar</button>
+        <button class="tab" onclick="switchTab('register')">Cadastrar</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="login-form">
+        <button class="google-btn" onclick="loginGoogle()">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continuar com Google
+        </button>
+        <div class="divider">ou</div>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="l-email" placeholder="seu@email.com">
+        </div>
+        <div class="form-group">
+          <label>Senha</label>
+          <input type="password" id="l-pass" placeholder="••••••••">
+        </div>
+        <button class="submit-btn" onclick="doLogin()">Entrar na revista →</button>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="register-form" style="display:none">
+        <button class="google-btn" onclick="loginGoogle()">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Cadastrar com Google
+        </button>
+        <div class="divider">ou crie sua conta</div>
+        <div class="form-group">
+          <label>Nome completo</label>
+          <input type="text" id="r-name" placeholder="Seu nome">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="form-group">
+            <label>Idade</label>
+            <input type="number" id="r-age" placeholder="28" min="14" max="99">
+          </div>
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" id="r-email" placeholder="seu@email.com">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Instagram (opcional)</label>
+          <input type="text" id="r-insta" placeholder="@seuperfil">
+        </div>
+        <div class="form-group">
+          <label>Temas de interesse</label>
+          <div class="tag-grid" id="seg-tags"></div>
+        </div>
+        <div class="form-group">
+          <label>Dias que você gosta de ler</label>
+          <div class="tag-grid" id="day-tags">
+            <button class="seg-tag selected" data-day="monday">Seg</button>
+            <button class="seg-tag" data-day="tuesday">Ter</button>
+            <button class="seg-tag selected" data-day="wednesday">Qua</button>
+            <button class="seg-tag" data-day="thursday">Qui</button>
+            <button class="seg-tag selected" data-day="friday">Sex</button>
+            <button class="seg-tag" data-day="saturday">Sáb</button>
+            <button class="seg-tag" data-day="sunday">Dom</button>
+          </div>
+        </div>
+        <button class="submit-btn" onclick="doRegister()">Criar conta gratuita →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN SCREEN ── -->
+<div id="main-screen" class="screen">
+  <nav class="navbar">
+    <div class="logo" onclick="showScreen('main')">Oh Futuro</div>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" onclick="showScreen('tips')">Dicas PME</button>
+      <button class="btn btn-ghost" onclick="showScreen('cms')">CMSs</button>
+      <div class="user-dot" onclick="showScreen('profile')" id="user-av">A</div>
+    </div>
+  </nav>
+  <div class="main-content">
+    <div class="hero-banner">
+      <h1>Bem-vindo à <span>Oh Futuro</span>,<br><span id="hero-name">Leitor</span>!</h1>
+      <p>Conteúdo curado para você construir o amanhã que imagina hoje.</p>
+      <div class="hero-stats">
+        <div class="h-stat"><strong>23</strong> segmentos</div>
+        <div class="h-stat"><strong>500+</strong> artigos</div>
+        <div class="h-stat"><strong>12k</strong> membros</div>
+      </div>
+    </div>
+
+    <!-- SEGMENTOS -->
+    <div class="sec-header">
+      <h2>Segmentos da Revista</h2>
+    </div>
+    <div class="seg-grid" id="seg-grid"></div>
+
+    <!-- ARTIGOS EM DESTAQUE -->
+    <div class="sec-header">
+      <h2 style="display:flex; align-items:center; gap:10px;">
+        Em Destaque 
+        <span id="active-filter-badge" style="display:none; font-size:11px; font-weight:600; padding:2px 8px; border-radius:12px; background:var(--cb); border:1px solid var(--c1); color:var(--c1);"></span>
+      </h2>
+      <a id="clear-filter-btn" style="display:none; color:var(--c3); font-size:12px; font-weight:600; cursor:pointer;" onclick="clearArticleFilter()">Limpar Filtro</a>
+    </div>
+    <div class="articles-grid" id="articles-grid"></div>
+
+    <!-- COMPARTILHAMENTO -->
+    <div class="share-box">
+      <h3>🚀 Convide sua rede para o futuro</h3>
+      <p>Ganhe 50 pontos por cada amigo que se cadastrar pelo seu link. A comunidade cresce, você evolui.</p>
+      <div class="share-link-box">
+        <span id="share-link-display">https://ohfuturo.com.br/convite/A1B2C3D4</span>
+        <button class="copy-btn" onclick="copyLink()">Copiar</button>
+      </div>
+      <div class="share-platforms">
+        <button class="plat-btn" style="background:#25D366;color:#000" onclick="shareWpp()">WhatsApp</button>
+        <button class="plat-btn" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff" onclick="shareInsta()">Instagram</button>
+        <button class="plat-btn" style="background:#0077b5;color:#fff" onclick="shareLinkedin()">LinkedIn</button>
+        <button class="plat-btn" style="background:var(--c7);color:var(--ct);border:1px solid rgba(136,136,187,0.3)" onclick="copyLink()">🔗 Copiar Link</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PROFILE SCREEN ── -->
+<div id="profile-screen" class="screen">
+  <nav class="navbar">
+    <div class="logo" onclick="showScreen('main')">Oh Futuro</div>
+    <button class="btn btn-ghost" onclick="showScreen('main')">← Voltar</button>
+  </nav>
+  <div class="profile-header">
+    <div class="profile-av" id="prof-av">A</div>
+    <div class="profile-name" id="prof-name">Ana Lima</div>
+    <div style="font-size:13px;color:var(--cs)" id="prof-email">ana@email.com</div>
+    <div class="profile-code">
+      🎟 Código: <strong id="prof-code">A1B2C3D4</strong>
+      <button onclick="copyLink()" style="background:none;border:none;color:var(--c1);cursor:pointer;font-size:12px;">copiar link</button>
+    </div>
+    <div id="prof-extra-details" style="font-size:12px; color:var(--cs); margin-top:8px; display:flex; flex-wrap:wrap; gap:12px;">
+      <span id="prof-age"></span>
+      <span id="prof-insta"></span>
+    </div>
+    <div class="stats-row">
+      <div class="st"><strong>12</strong><span>Artigos lidos</span></div>
+      <div class="st"><strong>3</strong><span>Indicações</span></div>
+      <div class="st"><strong>5</strong><span>Dias seguidos</span></div>
+      <div class="st"><strong>200</strong><span>Pontos</span></div>
+    </div>
+  </div>
+  <div class="main-content">
+    <div class="sec-header" style="margin-top:0">
+      <h2>Meus segmentos favoritos</h2>
+    </div>
+    <div class="tag-grid" id="profile-segs" style="margin-bottom:24px"></div>
+    <div class="sec-header">
+      <h2>Dias preferidos de leitura</h2>
+    </div>
+    <div class="tag-grid" id="profile-days" style="margin-bottom:24px"></div>
+    <div class="sec-header">
+      <h2>Compartilhar revista</h2>
+    </div>
+    <div class="share-box">
+      <h3>🌍 Espalhe o futuro</h3>
+      <p>Cada convite aceito = 50 pontos para você + acesso à comunidade premium para o convidado.</p>
+      <div class="share-link-box">
+        <span id="share-link-2">https://ohfuturo.com.br/convite/A1B2C3D4</span>
+        <button class="copy-btn" onclick="copyLink()">Copiar</button>
+      </div>
+      <div class="share-platforms">
+        <button class="plat-btn" style="background:#25D366;color:#000" onclick="shareWpp()">WhatsApp</button>
+        <button class="plat-btn" style="background:#0077b5;color:#fff" onclick="shareLinkedin()">LinkedIn</button>
+        <button class="plat-btn" style="background:var(--c7);color:var(--ct);border:1px solid rgba(136,136,187,0.3)" onclick="copyLink()">🔗 Link</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TIPS SCREEN ── -->
+<div id="tips-screen" class="screen">
+  <nav class="navbar">
+    <div class="logo" onclick="showScreen('main')">Oh Futuro</div>
+    <button class="btn btn-ghost" onclick="showScreen('main')">← Voltar</button>
+  </nav>
+  <div class="main-content">
+    <div class="hero-banner" style="margin-top:0">
+      <h1>💡 Dicas para <span>PMEs</span></h1>
+      <p>Práticas usadas pelas melhores organizações — adaptadas para pequenas e médias empresas.</p>
+    </div>
+    <div class="tips-section" id="tips-section"></div>
+  </div>
+</div>
+
+<!-- ── CMS SCREEN ── -->
+<div id="cms-screen" class="screen">
+  <nav class="navbar">
+    <div class="logo" onclick="showScreen('main')">Oh Futuro</div>
+    <button class="btn btn-ghost" onclick="showScreen('main')">← Voltar</button>
+  </nav>
+  <div class="main-content">
+    <div class="hero-banner" style="margin-top:0">
+      <h1>🛠 CMSs para <span>Revistas Digitais</span></h1>
+      <p>Ferramentas recomendadas para criar e gerir a sua revista. Baseado em uso real do mercado.</p>
+    </div>
+    <div class="cms-grid" id="cms-grid"></div>
+  </div>
+</div>
+
+<script>
+const SEGMENTS = [
+  {id:"tech",icon:"💡",name:"Tecnologia"},
+  {id:"marketing",icon:"📈",name:"Marketing Digital"},
+  {id:"ai",icon:"🤖",name:"IA & Futuro"},
+  {id:"commerce",icon:"🛍️",name:"Comércio & Varejo"},
+  {id:"beauty",icon:"💅",name:"Beleza"},
+  {id:"travel",icon:"✈️",name:"Viagens & Hotelaria"},
+  {id:"education",icon:"📚",name:"Educação"},
+  {id:"health",icon:"🏥",name:"Saúde & Medicina"},
+  {id:"religion",icon:"🙏",name:"Religião"},
+  {id:"wholesale",icon:"🏭",name:"Atacado"},
+  {id:"legal",icon:"⚖️",name:"Advocacia & Jurídico"},
+  {id:"politics",icon:"🏛️",name:"Política"},
+  {id:"neuro",icon:"🧠",name:"Autismo & TDAH"},
+  {id:"fitness",icon:"💪",name:"Musculação"},
+  {id:"nutrition",icon:"🥗",name:"Dietas & Nutrição"},
+  {id:"culinary",icon:"🍽️",name:"Culinária"},
+  {id:"gaming",icon:"🎮",name:"Jogos"},
+  {id:"entertainment",icon:"🎬",name:"Filmes & Séries"},
+  {id:"leisure",icon:"🎭",name:"Lazer"},
+  {id:"finance",icon:"💰",name:"Finanças"},
+  {id:"entrepreneurship",icon:"🚀",name:"Empreendedorismo"},
+  {id:"sustainability",icon:"🌱",name:"Sustentabilidade"},
+  {id:"hr",icon:"👥",name:"RH & Pessoas"},
+];
+
+const ARTICLES = [
+  {seg:"ai",badge:"IA & Futuro",title:"5 Estratégias de IA para PMEs em 2026",desc:"Como pequenas e médias empresas usam IA para crescer 34% mais rápido.",time:"5 min",likes:142,featured:true},
+  {seg:"tech",badge:"Tecnologia",title:"Stack tecnológica para startups zeradas",desc:"Ferramentas gratuitas que valem ouro no início da jornada empreendedora.",time:"7 min",likes:98,featured:true},
+  {seg:"marketing",badge:"Marketing",title:"Growth Hacking: 10 táticas com ROI comprovado",desc:"Estratégias que custam pouco e convertem muito em negócios locais.",time:"6 min",likes:211,featured:false},
+  {seg:"entrepreneurship",badge:"Empreendedorismo",title:"Como precificar sem medo de perder clientes",desc:"A fórmula usada pelas PMEs que crescem lucrando — não apenas faturando.",time:"4 min",likes:176,featured:false},
+];
+
+const TIPS = [
+  {cat:"💰 Gestão Financeira",tips:["Separe as finanças pessoais das empresariais desde o primeiro dia","Mantenha reserva de emergência de 3-6 meses de despesas fixas","Use fluxo de caixa semanal para antecipar problemas","Precifique com margem mínima de 30% para PME"]},
+  {cat:"📣 Marketing Digital",tips:["Comece com 1-2 redes sociais, não tente estar em todo lugar","Conteúdo educativo gera 3x mais engajamento que promocional","Invista em Google Meu Negócio para negócios locais","Email marketing: ROI de R$42 para cada R$1 investido"]},
+  {cat:"👥 Gestão de Equipe",tips:["Documente processos antes de delegar","Reuniões de 30 min/semana substituem horas de alinhamento","Defina OKRs trimestrais mesmo para times pequenos","Treinamento aumenta retenção em até 50%"]},
+  {cat:"🛠 Tecnologia e Ferramentas",tips:["Use Notion, Trello e Google Workspace gratuitamente no início","CRM básico vale o investimento a partir do 2º funcionário","Backup em nuvem é obrigatório — 60% das PMEs que perdem dados fecham","Adote IA (Claude, GPT) para acelerar conteúdo e análise"]},
+];
+
+const CMS_LIST = [
+  {name:"Ghost",type:"CMS especializado em publicações digitais",price:"A partir de $9/mês (ou gratuito self-hosted)",rec:true,pros:["Feito para publishers","Assinaturas nativas","SEO excelente"]},
+  {name:"Strapi",type:"Headless CMS open source",price:"Gratuito self-hosted / Cloud $29/mês",rec:true,pros:["API REST & GraphQL","100% personalizável","Controle total dos dados"]},
+  {name:"Sanity",type:"Headless CMS com Studio visual",price:"Gratuito até 3 users / $15/user extra",rec:false,pros:["Real-time collaboration","Query GROQ poderoso"]},
+  {name:"WordPress + Elementor",type:"CMS tradicional + page builder",price:"Gratuito + Elementor Pro ~$59/ano",rec:false,pros:["Ecossistema enorme","Sem necessidade de código"]},
+  {name:"Directus",type:"Data platform + CMS headless",price:"Gratuito self-hosted / Cloud $15/mês",rec:false,pros:["Open source total","Suporte a qualquer banco SQL"]},
+];
+
+let currentUser = null;
+let selectedSegs = [];
+let activeFilter = null;
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(name+'-screen').classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('login-form').style.display = tab==='login'?'block':'none';
+  document.getElementById('register-form').style.display = tab==='register'?'block':'none';
+}
+
+function buildSegTags() {
+  const el = document.getElementById('seg-tags');
+  if(!el) return;
+  el.innerHTML = SEGMENTS.map(s =>
+    `<button class="seg-tag" data-id="${s.id}" onclick="toggleSeg(this,'${s.id}')">${s.icon} ${s.name}</button>`
+  ).join('');
+}
+
+function toggleSeg(el, id) {
+  el.classList.toggle('selected');
+  if(el.classList.contains('selected')) { if(!selectedSegs.includes(id)) selectedSegs.push(id); }
+  else { selectedSegs = selectedSegs.filter(s=>s!==id); }
+}
+
+function doLogin() {
+  const email = document.getElementById('l-email').value || 'usuario@email.com';
+  const name = email.split('@')[0].replace('.', ' ');
+  const initials = name.split(' ').map(w=>w[0]?.toUpperCase()||'').join('').slice(0,2);
+  currentUser = {
+    name: name.charAt(0).toUpperCase()+name.slice(1),
+    email,
+    initials,
+    code: Math.random().toString(36).slice(2,10).toUpperCase(),
+    segments: selectedSegs.length ? selectedSegs : ['tech', 'ai'],
+    age: 30,
+    insta: '@' + name.split(' ')[0],
+    days: ['Seg', 'Qua', 'Sex']
+  };
+  loadDashboard();
+  showScreen('main');
+  showToast(`Bem-vindo de volta, ${currentUser.name}!`);
+}
+
+function loginGoogle() {
+  currentUser = {
+    name: 'Alex Rocha',
+    email: 'alex.rocha@gmail.com',
+    initials: 'AR',
+    code: 'OHFTX942',
+    segments: ['tech','ai','marketing'],
+    age: 28,
+    insta: '@alexrocha',
+    days: ['Seg', 'Qua', 'Sex']
+  };
+  loadDashboard();
+  showScreen('main');
+  showToast(`Conectado com Google como ${currentUser.name}!`);
+}
+
+function doRegister() {
+  const name = document.getElementById('r-name').value || 'Novo Membro';
+  const email = document.getElementById('r-email').value || 'membro@email.com';
+  const age = document.getElementById('r-age').value || 28;
+  const insta = document.getElementById('r-insta').value || '@seuperfil';
+  const initials = name.split(' ').map(w=>w[0]?.toUpperCase()||'').join('').slice(0,2) || 'NM';
+  const selectedDays = Array.from(document.querySelectorAll('#day-tags .seg-tag.selected'))
+    .map(btn => btn.textContent);
+  
+  currentUser = {
+    name,
+    email,
+    initials,
+    code: Math.random().toString(36).slice(2,10).toUpperCase(),
+    segments: selectedSegs,
+    age,
+    insta,
+    days: selectedDays
+  };
+  loadDashboard();
+  showScreen('main');
+  showToast(`Cadastro realizado com sucesso! Bem-vindo, ${currentUser.name}.`);
+}
+
+function loadDashboard() {
+  if(!currentUser) return;
+  document.getElementById('hero-name').textContent = currentUser.name.split(' ')[0];
+  document.getElementById('user-av').textContent = currentUser.initials;
+  const link = `https://ohfuturo.com.br/convite/${currentUser.code}`;
+  document.getElementById('share-link-display').textContent = link;
+  document.getElementById('share-link-2') && (document.getElementById('share-link-2').textContent = link);
+  document.getElementById('prof-av').textContent = currentUser.initials;
+  document.getElementById('prof-name').textContent = currentUser.name;
+  document.getElementById('prof-email').textContent = currentUser.email;
+  document.getElementById('prof-code').textContent = currentUser.code;
+
+  // Custom metadata for profile
+  const ageEl = document.getElementById('prof-age');
+  if (ageEl) ageEl.textContent = currentUser.age ? `🎂 ${currentUser.age} anos` : '';
+  const instaEl = document.getElementById('prof-insta');
+  if (instaEl) instaEl.textContent = currentUser.insta ? `📸 ${currentUser.insta}` : '';
+
+  // Render profile reading days
+  const pd = document.getElementById('profile-days');
+  if (pd) {
+    const days = currentUser.days && currentUser.days.length ? currentUser.days : ['Seg', 'Qua', 'Sex'];
+    pd.innerHTML = days.map(d => `<span class="seg-tag selected">${d}</span>`).join('');
+  }
+
+  // Build segment grid
+  const sg = document.getElementById('seg-grid');
+  sg.innerHTML = SEGMENTS.map(s => `
+    <div class="seg-card" onclick="sendPrompt('Mostre artigos do segmento ${s.name} na Oh Futuro ↗')">
+      <div class="icon">${s.icon}</div>
+      <div class="sname">${s.name}</div>
+    </div>`).join('');
+
+  // Build articles list
+  renderArticlesList(activeFilter);
+
+  // Profile segs
+  const ps = document.getElementById('profile-segs');
+  const segs = currentUser.segments.length ? currentUser.segments : ['tech','ai'];
+  ps.innerHTML = segs.map(id => {
+    const s = SEGMENTS.find(x=>x.id===id);
+    return s ? `<span class="seg-tag selected">${s.icon} ${s.name}</span>` : '';
+  }).join('');
+
+  // Tips
+  const ts = document.getElementById('tips-section');
+  ts.innerHTML = TIPS.map(g => `
+    <div class="tip-cat">${g.cat}</div>
+    ${g.tips.map(t=>`<div class="tip-item">→ ${t}</div>`).join('')}`).join('');
+
+  // CMS
+  const cs = document.getElementById('cms-grid');
+  cs.innerHTML = CMS_LIST.map(c => `
+    <div class="cms-card ${c.rec?'rec':''}">
+      <div class="cms-name">${c.name} ${c.rec?'<span class="rec-badge">⭐ RECOMENDADO</span>':''}</div>
+      <div class="cms-type">${c.type}</div>
+      <div class="cms-price">💰 ${c.price}</div>
+      <ul style="margin-top:10px;padding-left:16px;font-size:12px;color:var(--cs);line-height:1.8">
+        ${c.pros.map(p=>`<li>${p}</li>`).join('')}
+      </ul>
+    </div>`).join('');
+}
+
+// Articles list rendering
+function renderArticlesList(segId) {
+  const ag = document.getElementById('articles-grid');
+  if (!ag) return;
+  
+  const filtered = segId ? ARTICLES.filter(a => a.seg === segId) : ARTICLES;
+  
+  if (filtered.length === 0) {
+    ag.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 32px; color: var(--cs); font-size: 14px;">
+        Nenhum artigo encontrado para este segmento no momento.
+      </div>
+    `;
+    return;
+  }
+  
+  ag.innerHTML = filtered.map(a => `
+    <div class="art-card ${a.featured?'featured':''}">
+      <span class="art-seg-badge">${a.badge}</span>
+      <h3>${a.title}</h3>
+      <p>${a.desc}</p>
+      <div class="art-meta">
+        <span>⏱ ${a.time}</span>
+        <span>❤️ ${a.likes}</span>
+      </div>
+    </div>`).join('');
+}
+
+// Segment filter handling
+function filterArticlesBySegment(segId, segName) {
+  activeFilter = segId;
+  const badgeEl = document.getElementById('active-filter-badge');
+  const clearBtn = document.getElementById('clear-filter-btn');
+  
+  if (badgeEl) {
+    badgeEl.textContent = segName;
+    badgeEl.style.display = 'inline-block';
+  }
+  if (clearBtn) {
+    clearBtn.style.display = 'inline-block';
+  }
+  
+  renderArticlesList(segId);
+}
+
+function clearArticleFilter() {
+  activeFilter = null;
+  const badgeEl = document.getElementById('active-filter-badge');
+  const clearBtn = document.getElementById('clear-filter-btn');
+  
+  if (badgeEl) {
+    badgeEl.style.display = 'none';
+  }
+  if (clearBtn) {
+    clearBtn.style.display = 'none';
+  }
+  
+  renderArticlesList(null);
+  showToast('Filtro removido. Mostrando todos os artigos.');
+}
+
+// AI prompt sending handler
+function sendPrompt(promptText) {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'send_prompt', text: promptText }, '*');
+  }
+  
+  let matchedSegment = null;
+  for (const s of SEGMENTS) {
+    if (promptText.includes(s.name)) {
+      matchedSegment = s;
+      break;
+    }
+  }
+  
+  if (matchedSegment) {
+    filterArticlesBySegment(matchedSegment.id, matchedSegment.name);
+    showToast(`Filtrado por: ${matchedSegment.name}`);
+  } else {
+    showToast(`Prompt: "${promptText}"`);
+  }
+}
+
+// Toast notification display logic
+function showToast(message) {
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `
+    <span class="toast-icon">✨</span>
+    <span>${message}</span>
+  `;
+  container.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 10);
+  
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }, 3000);
+}
+
+// Link copying utility with fallback
+function copyLink() {
+  const link = `https://ohfuturo.com.br/convite/${currentUser?.code || 'DEMO1234'}`;
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(link).then(() => {
+      showToast('Link copiado! 🎉 Compartilhe com seus contatos.');
+    }).catch(err => {
+      fallbackCopyTextToClipboard(link);
+    });
+  } else {
+    fallbackCopyTextToClipboard(link);
+  }
+}
+
+function fallbackCopyTextToClipboard(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.style.position = "fixed";
+  textArea.style.left = "-999999px";
+  textArea.style.top = "-999999px";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  try {
+    document.execCommand('copy');
+    showToast('Link copiado! 🎉 Compartilhe com seus contatos.');
+  } catch (err) {
+    console.error('Erro ao copiar', err);
+    showToast('Não foi possível copiar automaticamente. Use Ctrl+C.');
+  }
+  document.body.removeChild(textArea);
+}
+
+function shareWpp() {
+  const link = `https://ohfuturo.com.br/convite/${currentUser?.code || 'DEMO1234'}`;
+  const msg = encodeURIComponent(`🚀 Você precisa conhecer a *Oh Futuro*, a revista digital do futuro!\n\nConteúdo sobre tecnologia, negócios, saúde e muito mais.\n\nEntrar: ${link}`);
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+}
+
+function shareLinkedin() {
+  const link = `https://ohfuturo.com.br/convite/${currentUser?.code || 'DEMO1234'}`;
+  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(link)}`, '_blank');
+}
+
+function shareInsta() { 
+  copyLink(); 
+  showToast('Link copiado! Cole no seu perfil do Instagram 📲'); 
+}
+
+// Init
+buildSegTags();
+// Day tag toggle
+document.querySelectorAll('#day-tags .seg-tag').forEach(btn => {
+  btn.addEventListener('click', () => btn.classList.toggle('selected'));
+});
+</script>
+</body>
+</html>
