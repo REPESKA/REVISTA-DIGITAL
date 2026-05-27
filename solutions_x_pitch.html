@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Solutions X — Pitch Deck</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   :root {
@@ -439,6 +439,7 @@
     height: 100%;
     border-radius: 5px;
     background: linear-gradient(90deg, var(--blue), var(--cyan));
+    width: var(--w);
     animation: barGrow 1.5s ease forwards;
     transform-origin: left;
   }
@@ -522,9 +523,27 @@
 
   /* ── PRINT ── */
   @media print {
+    @page {
+      size: landscape;
+      margin: 0;
+    }
+    body {
+      background: var(--dark) !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
     .controls { display: none; }
-    .slide { min-height: unset; page-break-after: always; padding: 40px; }
     .slides-container { padding-top: 0; }
+    .slide {
+      min-height: 100vh;
+      height: 100vh;
+      page-break-after: always;
+      page-break-inside: avoid;
+      background: var(--dark) !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      padding: 40px 60px;
+    }
   }
 
   /* ── SCROLLBAR ── */
@@ -582,7 +601,7 @@
       <!-- Product Image / Illustration -->
       <div class="product-visual">
         <div class="scan-line"></div>
-        <svg viewBox="0 0 280 260" xmlns="http://www.w3.org/2000/svg">
+        <svg width="280" height="260" viewBox="0 0 280 260" xmlns="http://www.w3.org/2000/svg">
           <!-- Screen frame -->
           <rect x="20" y="10" width="240" height="165" rx="8" fill="none" stroke="#00f5ff" stroke-width="1.2" opacity="0.6"/>
           <rect x="30" y="20" width="220" height="145" rx="4" fill="rgba(0,50,100,0.3)"/>
@@ -1170,22 +1189,63 @@ slides.forEach(s => observer.observe(s));
 async function exportPDF(btn) {
   btn.disabled = true;
   btn.textContent = '⏳ Gerando PDF...';
+
+  // Check if html2pdf library is loaded (handles offline situations)
+  if (typeof html2pdf === 'undefined') {
+    console.warn('html2pdf.js não está carregado. Usando o diálogo de impressão do navegador.');
+    alert('O conversor automático está indisponível (talvez por estar sem internet). Vamos abrir a janela de impressão do sistema, onde você poderá escolher "Salvar como PDF".');
+    btn.disabled = false;
+    btn.textContent = '⬇ Exportar PDF';
+    window.print();
+    return;
+  }
   
   const el = document.getElementById('slides');
+  
+  // Ensure SVG has explicit dimensions prior to html2canvas parse
+  const svg = el.querySelector('svg');
+  if (svg && !svg.getAttribute('width')) {
+    svg.setAttribute('width', '280');
+    svg.setAttribute('height', '260');
+  }
+
   const opt = {
     margin: 0,
     filename: 'SolutionsX_Pitch_Deck.pdf',
     image: { type: 'jpeg', quality: 0.95 },
-    html2canvas: { scale: 1.5, useCORS: true, backgroundColor: '#020814' },
-    jsPDF: { unit: 'px', format: [1280, 720], orientation: 'landscape' },
+    html2canvas: { 
+      scale: 1.5, 
+      useCORS: true, 
+      backgroundColor: '#020814',
+      logging: false,
+      onclone: function(clonedDoc) {
+        // Apply inline style override in cloned DOM to stop animations and ensure static layout
+        const style = clonedDoc.createElement('style');
+        style.innerHTML = `
+          * {
+            animation: none !important;
+            transition: none !important;
+            animation-duration: 0s !important;
+            transition-duration: 0s !important;
+          }
+          .bar-fill {
+            width: var(--w) !important;
+          }
+        `;
+        clonedDoc.head.appendChild(style);
+      }
+    },
+    jsPDF: { unit: 'pt', format: [1280, 720], orientation: 'landscape' },
     pagebreak: { mode: ['css', 'legacy'], before: '.slide' }
   };
 
   try {
     await html2pdf().set(opt).from(el).save();
   } catch(e) {
-    console.error(e);
-    alert('Erro ao gerar PDF. Tente usar Ctrl+P para imprimir.');
+    console.error('Erro ao gerar PDF via html2pdf:', e);
+    // Graceful fallback to native printing
+    alert('Ocorreu um erro ao gerar o PDF automático. Abriremos o painel de impressão do sistema, onde você poderá salvar como PDF com maior fidelidade.');
+    window.print();
   }
 
   btn.disabled = false;
