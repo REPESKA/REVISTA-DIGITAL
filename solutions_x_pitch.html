@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solutions X — Pitch Deck</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root {
+    --cyan: #00f5ff;
+    --blue: #0066ff;
+    --purple: #7b2fff;
+    --dark: #020814;
+    --darker: #010509;
+    --panel: rgba(0,20,50,0.6);
+    --border: rgba(0,245,255,0.25);
+    --glow: 0 0 20px rgba(0,245,255,0.4);
+    --text: #c8e6f7;
+    --accent: #ff6b35;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    font-family: 'Exo 2', sans-serif;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── TOP CONTROLS ── */
+  .controls {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 32px;
+    background: rgba(2,8,20,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+  }
+
+  .logo-mini {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--cyan);
+    letter-spacing: 3px;
+    text-shadow: var(--glow);
+  }
+
+  .nav-dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .nav-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    border: 1px solid var(--cyan);
+    cursor: pointer;
+    transition: all .3s;
+  }
+  .nav-dot.active { background: var(--cyan); box-shadow: var(--glow); }
+
+  .btn-pdf {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--dark);
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    border: none;
+    padding: 9px 22px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all .3s;
+    box-shadow: 0 0 15px rgba(0,245,255,0.3);
+  }
+  .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,245,255,0.6); }
+  .btn-pdf:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* ── SLIDE LAYOUT ── */
+  .slides-container {
+    padding-top: 60px;
+  }
+
+  .slide {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 80px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Grid BG */
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+  }
+
+  /* Slide number */
+  .slide-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: rgba(0,245,255,0.4);
+    letter-spacing: 4px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  /* Section label */
+  .section-tag {
+    display: inline-block;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+    background: rgba(0,245,255,0.05);
+  }
+
+  h1.slide-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #fff 0%, var(--cyan) 60%, var(--blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  h2.slide-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(22px, 3vw, 38px);
+    font-weight: 700;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #fff 0%, var(--cyan) 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    font-weight: 300;
+    color: rgba(200,230,247,0.7);
+    max-width: 600px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+
+  /* ── PANELS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    position: relative;
+    backdrop-filter: blur(8px);
+    transition: border-color .3s, box-shadow .3s;
+  }
+  .panel:hover {
+    border-color: rgba(0,245,255,0.5);
+    box-shadow: var(--glow);
+  }
+
+  .panel-accent { border-left: 3px solid var(--cyan); }
+  .panel-accent-orange { border-left: 3px solid var(--accent); }
+  .panel-accent-purple { border-left: 3px solid var(--purple); }
+
+  .panel h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .panel p, .panel li {
+    font-size: 14px;
+    line-height: 1.75;
+    color: rgba(200,230,247,0.85);
+  }
+
+  .panel ul { list-style: none; }
+  .panel ul li::before {
+    content: '▸ ';
+    color: var(--cyan);
+    font-size: 11px;
+  }
+
+  /* ── SLIDE 1 HERO ── */
+  .hero-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .product-visual {
+    position: relative;
+    height: 320px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, #010c20 0%, #001235 50%, #020814 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 60px rgba(0,100,255,0.2);
+  }
+
+  .product-visual svg { width: 280px; height: 260px; }
+
+  .scan-line {
+    position: absolute;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    animation: scanDown 3s linear infinite;
+    opacity: 0.5;
+  }
+
+  @keyframes scanDown {
+    0% { top: 0; }
+    100% { top: 100%; }
+  }
+
+  .value-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,245,255,0.08);
+    border: 1px solid rgba(0,245,255,0.3);
+    border-radius: 100px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--cyan);
+    margin: 6px 0;
+  }
+
+  .value-pill::before { content: '✦'; font-size: 10px; }
+
+  /* ── METRICS / KPI ── */
+  .kpi-row {
+    display: flex;
+    gap: 20px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  .kpi-card {
+    flex: 1;
+    min-width: 130px;
+    background: rgba(0,100,255,0.06);
+    border: 1px solid rgba(0,102,255,0.3);
+    border-radius: 8px;
+    padding: 20px 18px;
+    text-align: center;
+  }
+
+  .kpi-card .kpi-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--cyan);
+    text-shadow: var(--glow);
+  }
+
+  .kpi-card .kpi-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(200,230,247,0.5);
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    position: relative;
+    padding-left: 30px;
+    margin-top: 12px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--cyan), var(--purple), transparent);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+    padding-left: 20px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -22px; top: 7px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+  }
+  .timeline-item .t-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .timeline-item p {
+    font-size: 14px;
+    color: rgba(200,230,247,0.8);
+    line-height: 1.6;
+  }
+
+  /* ── FLOWCHART ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .flow-step {
+    background: rgba(0,245,255,0.07);
+    border: 1px solid rgba(0,245,255,0.25);
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--cyan);
+    text-align: center;
+    min-width: 90px;
+  }
+  .flow-arrow {
+    color: rgba(0,245,255,0.5);
+    font-size: 18px;
+  }
+
+  /* ── POST EXAMPLE ── */
+  .post-mock {
+    background: rgba(10,15,30,0.9);
+    border: 1px solid rgba(0,245,255,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 420px;
+  }
+  .post-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .post-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--dark);
+  }
+  .post-handle { font-size: 13px; font-weight: 600; color: #fff; }
+  .post-sub { font-size: 11px; color: rgba(200,230,247,0.5); }
+  .post-body { font-size: 14px; line-height: 1.8; color: rgba(200,230,247,0.9); }
+  .post-hook { font-weight: 700; color: var(--cyan); }
+  .post-cta {
+    margin-top: 14px;
+    display: inline-block;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    color: var(--dark);
+    font-weight: 700;
+    font-size: 12px;
+    padding: 8px 18px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+  .post-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+    font-size: 12px;
+    color: rgba(200,230,247,0.5);
+  }
+
+  /* ── CHART BAR ── */
+  .bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 10px;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .bar-label { width: 120px; font-size: 12px; color: rgba(200,230,247,0.7); text-align: right; flex-shrink: 0; }
+  .bar-track {
+    flex: 1;
+    height: 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    animation: barGrow 1.5s ease forwards;
+    transform-origin: left;
+  }
+  @keyframes barGrow {
+    from { width: 0; }
+    to { width: var(--w); }
+  }
+  .bar-pct { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--cyan); width: 40px; }
+
+  /* ── SLIDE ACCENTS ── */
+  .corner-br {
+    position: absolute;
+    bottom: 24px; right: 32px;
+    width: 60px; height: 60px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    opacity: 0.4;
+  }
+  .corner-tl {
+    position: absolute;
+    top: 80px; left: 24px;
+    width: 40px; height: 40px;
+    border-left: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+    opacity: 0.3;
+  }
+
+  /* ── SLIDE SPECIFIC BG GLOWS ── */
+  .s1-glow { position: absolute; top: -100px; right: -100px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(0,100,255,0.1) 0%, transparent 70%); pointer-events: none; }
+  .s2-glow { position: absolute; bottom: -150px; left: -100px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(123,47,255,0.08) 0%, transparent 70%); pointer-events: none; }
+
+  /* ── VIDEO MOCK ── */
+  .video-mock {
+    background: #000;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    max-width: 440px;
+  }
+  .video-mock .play-btn {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: rgba(0,245,255,0.15);
+    border: 2px solid var(--cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--cyan);
+    cursor: pointer;
+    z-index: 2;
+    transition: all .3s;
+  }
+  .video-mock .play-btn:hover { background: rgba(0,245,255,0.3); box-shadow: var(--glow); }
+  .video-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #001030 0%, #020014 50%, #001530 100%);
+  }
+  .video-label {
+    position: absolute;
+    bottom: 12px; left: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    opacity: 0.7;
+  }
+  .video-dur {
+    position: absolute;
+    bottom: 12px; right: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: rgba(200,230,247,0.5);
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .controls { display: none; }
+    .slide { min-height: unset; page-break-after: always; padding: 40px; }
+    .slides-container { padding-top: 0; }
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--darker); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- TOP CONTROLS -->
+<div class="controls">
+  <div class="logo-mini">SX</div>
+  <div class="nav-dots">
+    <div class="nav-dot active" onclick="scrollToSlide(0)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(1)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(2)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(3)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(4)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(5)"></div>
+    <div class="nav-dot" onclick="scrollToSlide(6)"></div>
+  </div>
+  <button class="btn-pdf" onclick="exportPDF(this)" id="pdfBtn">⬇ Exportar PDF</button>
+</div>
+
+<div class="slides-container" id="slides">
+
+<!-- ═══════════════════════════════════════════ SLIDE 1 ══ -->
+<div class="slide" data-slide="0">
+  <div class="s1-glow"></div>
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+
+  <div class="slide-num">// SLIDE 01 — INTRODUÇÃO</div>
+  <span class="section-tag">O Produto</span>
+
+  <div class="hero-layout">
+    <div>
+      <h1 class="slide-title">SOLUTIONS X</h1>
+      <p class="subtitle">Sistema Inteligente de Gestão de Recursos Humanos — onde dados, pessoas e decisões convergem em tempo real.</p>
+
+      <div style="margin-bottom: 28px;">
+        <div class="value-pill">Problema: RH fragmentado, lento e reativo</div>
+        <div class="value-pill">Solução: Plataforma unificada com IA preditiva</div>
+        <div class="value-pill">Proposta de Valor: +60% eficiência operacional</div>
+      </div>
+
+      <div class="panel panel-accent" style="max-width: 480px;">
+        <h3>Problema de Mercado</h3>
+        <p>Empresas perdem até <strong style="color:var(--cyan)">23% de produtividade</strong> anualmente por processos de RH descentralizados, falta de visibilidade de dados e tomada de decisão baseada em intuição em vez de inteligência. O mercado carece de uma solução integrada que una gestão de pessoas, analytics e automação em um único ecossistema.</p>
+      </div>
+    </div>
+
+    <div>
+      <!-- Product Image / Illustration -->
+      <div class="product-visual">
+        <div class="scan-line"></div>
+        <svg viewBox="0 0 280 260" xmlns="http://www.w3.org/2000/svg">
+          <!-- Screen frame -->
+          <rect x="20" y="10" width="240" height="165" rx="8" fill="none" stroke="#00f5ff" stroke-width="1.2" opacity="0.6"/>
+          <rect x="30" y="20" width="220" height="145" rx="4" fill="rgba(0,50,100,0.3)"/>
+          <!-- Header bar -->
+          <rect x="30" y="20" width="220" height="22" rx="4" fill="rgba(0,100,200,0.3)"/>
+          <circle cx="42" cy="31" r="4" fill="#ff5f57" opacity="0.7"/>
+          <circle cx="56" cy="31" r="4" fill="#febc2e" opacity="0.7"/>
+          <circle cx="70" cy="31" r="4" fill="#28c840" opacity="0.7"/>
+          <text x="105" y="35" font-family="monospace" font-size="9" fill="rgba(0,245,255,0.6)">SOLUTIONS X — DASHBOARD</text>
+          <!-- Side nav -->
+          <rect x="30" y="42" width="35" height="123" fill="rgba(0,30,80,0.4)"/>
+          <rect x="33" y="52" width="29" height="8" rx="2" fill="rgba(0,245,255,0.3)"/>
+          <rect x="33" y="66" width="29" height="8" rx="2" fill="rgba(0,245,255,0.12)"/>
+          <rect x="33" y="80" width="29" height="8" rx="2" fill="rgba(0,245,255,0.12)"/>
+          <rect x="33" y="94" width="29" height="8" rx="2" fill="rgba(0,245,255,0.12)"/>
+          <rect x="33" y="108" width="29" height="8" rx="2" fill="rgba(0,245,255,0.12)"/>
+          <!-- Main content -->
+          <!-- KPI boxes -->
+          <rect x="72" y="48" width="52" height="36" rx="3" fill="rgba(0,100,255,0.15)" stroke="rgba(0,245,255,0.3)" stroke-width="0.5"/>
+          <text x="98" y="64" font-family="monospace" font-size="11" fill="#00f5ff" text-anchor="middle" font-weight="bold">847</text>
+          <text x="98" y="76" font-family="monospace" font-size="7" fill="rgba(200,230,247,0.5)" text-anchor="middle">ATIVOS</text>
+          <rect x="130" y="48" width="52" height="36" rx="3" fill="rgba(0,100,255,0.15)" stroke="rgba(0,245,255,0.3)" stroke-width="0.5"/>
+          <text x="156" y="64" font-family="monospace" font-size="11" fill="#00f5ff" text-anchor="middle" font-weight="bold">94%</text>
+          <text x="156" y="76" font-family="monospace" font-size="7" fill="rgba(200,230,247,0.5)" text-anchor="middle">RETENÇÃO</text>
+          <rect x="188" y="48" width="52" height="36" rx="3" fill="rgba(0,100,255,0.15)" stroke="rgba(0,245,255,0.3)" stroke-width="0.5"/>
+          <text x="214" y="64" font-family="monospace" font-size="11" fill="#00f5ff" text-anchor="middle" font-weight="bold">4.8</text>
+          <text x="214" y="76" font-family="monospace" font-size="7" fill="rgba(200,230,247,0.5)" text-anchor="middle">NPS</text>
+          <!-- Chart area -->
+          <rect x="72" y="92" width="100" height="65" rx="3" fill="rgba(0,20,50,0.5)" stroke="rgba(0,245,255,0.2)" stroke-width="0.5"/>
+          <text x="122" y="103" font-family="monospace" font-size="7" fill="rgba(0,245,255,0.6)" text-anchor="middle">PERFORMANCE / MÊS</text>
+          <polyline points="82,145 90,135 100,140 112,120 122,125 132,110 142,115 155,100 165,108" fill="none" stroke="#00f5ff" stroke-width="1.5" opacity="0.8"/>
+          <polyline points="82,145 90,135 100,140 112,120 122,125 132,110 142,115 155,100 165,108 165,155 82,155" fill="rgba(0,245,255,0.06)"/>
+          <!-- Right panel -->
+          <rect x="178" y="92" width="62" height="65" rx="3" fill="rgba(0,20,50,0.5)" stroke="rgba(0,245,255,0.2)" stroke-width="0.5"/>
+          <text x="209" y="103" font-family="monospace" font-size="7" fill="rgba(0,245,255,0.6)" text-anchor="middle">DEPARTAMENTOS</text>
+          <rect x="184" y="110" width="40" height="6" rx="2" fill="rgba(0,245,255,0.4)"/>
+          <text x="228" y="116" font-family="monospace" font-size="6.5" fill="rgba(200,230,247,0.6)">TI</text>
+          <rect x="184" y="122" width="28" height="6" rx="2" fill="rgba(0,100,255,0.5)"/>
+          <text x="216" y="128" font-family="monospace" font-size="6.5" fill="rgba(200,230,247,0.6)">RH</text>
+          <rect x="184" y="134" width="34" height="6" rx="2" fill="rgba(123,47,255,0.5)"/>
+          <text x="222" y="140" font-family="monospace" font-size="6.5" fill="rgba(200,230,247,0.6)">OPS</text>
+          <rect x="184" y="146" width="20" height="6" rx="2" fill="rgba(255,107,53,0.5)"/>
+          <text x="208" y="152" font-family="monospace" font-size="6.5" fill="rgba(200,230,247,0.6)">FIN</text>
+          <!-- Status bar -->
+          <rect x="30" y="168" width="220" height="12" fill="rgba(0,20,50,0.6)"/>
+          <circle cx="40" cy="174" r="3" fill="#28c840"/>
+          <text x="48" y="177" font-family="monospace" font-size="7" fill="rgba(200,230,247,0.4)">SISTEMA ONLINE · ÚLTIMA SYNC: 00:01:34</text>
+          <!-- Screen base -->
+          <rect x="115" y="175" width="50" height="8" rx="2" fill="rgba(0,80,150,0.3)"/>
+          <rect x="95" y="183" width="90" height="4" rx="2" fill="rgba(0,80,150,0.4)"/>
+          <!-- People icons -->
+          <g opacity="0.6">
+            <circle cx="60" cy="215" r="10" fill="none" stroke="#00f5ff" stroke-width="1"/>
+            <circle cx="60" cy="210" r="4" fill="rgba(0,245,255,0.3)"/>
+            <path d="M52 222 Q60 216 68 222" fill="rgba(0,245,255,0.3)" stroke="#00f5ff" stroke-width="0.8"/>
+          </g>
+          <g opacity="0.5">
+            <circle cx="140" cy="215" r="10" fill="none" stroke="#00f5ff" stroke-width="1"/>
+            <circle cx="140" cy="210" r="4" fill="rgba(0,245,255,0.3)"/>
+            <path d="M132 222 Q140 216 148 222" fill="rgba(0,245,255,0.3)" stroke="#00f5ff" stroke-width="0.8"/>
+          </g>
+          <g opacity="0.4">
+            <circle cx="220" cy="215" r="10" fill="none" stroke="#00f5ff" stroke-width="1"/>
+            <circle cx="220" cy="210" r="4" fill="rgba(0,245,255,0.3)"/>
+            <path d="M212 222 Q220 216 228 222" fill="rgba(0,245,255,0.3)" stroke="#00f5ff" stroke-width="0.8"/>
+          </g>
+          <!-- Connect lines -->
+          <line x1="70" y1="215" x2="130" y2="215" stroke="rgba(0,245,255,0.2)" stroke-width="0.8" stroke-dasharray="3,3"/>
+          <line x1="150" y1="215" x2="210" y2="215" stroke="rgba(0,245,255,0.2)" stroke-width="0.8" stroke-dasharray="3,3"/>
+        </svg>
+      </div>
+
+      <div class="kpi-row" style="margin-top:16px;">
+        <div class="kpi-card"><div class="kpi-val">60%</div><div class="kpi-label">+ Eficiência</div></div>
+        <div class="kpi-card"><div class="kpi-val">40%</div><div class="kpi-label">- Turnover</div></div>
+        <div class="kpi-card"><div class="kpi-val">3×</div><div class="kpi-label">ROI Médio</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ SLIDE 2 ══ -->
+<div class="slide" data-slide="1">
+  <div class="s2-glow"></div>
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+
+  <div class="slide-num">// SLIDE 02 — MERCADO</div>
+  <span class="section-tag">Público-Alvo & Segmentação</span>
+  <h2 class="slide-title">Quem Precisa da Solutions X?</h2>
+
+  <div class="grid-2">
+    <div>
+      <div class="panel panel-accent" style="margin-bottom: 20px;">
+        <h3>🎯 Público-Alvo Primário</h3>
+        <ul>
+          <li>Empresas médias e grandes (100–5.000 colaboradores)</li>
+          <li>Diretores e Gestores de RH sobrecarregados com planilhas</li>
+          <li>CEOs e CFOs buscando reduzir custos com turnover</li>
+          <li>Líderes de TI corporativa que demandam integração</li>
+        </ul>
+        <div style="margin-top:16px; padding-top:14px; border-top: 1px solid var(--border);">
+          <p><strong style="color:var(--cyan)">Principais Dores:</strong> processos manuais, falta de visibilidade, decisões lentas, alto índice de absenteísmo e custo elevado de recrutamento.</p>
+        </div>
+      </div>
+      <div class="panel panel-accent-purple">
+        <h3>🧠 Comportamento do Comprador</h3>
+        <ul>
+          <li>Pesquisa ativamente por soluções SaaS B2B</li>
+          <li>Decide por comparação técnica + ROI comprovado</li>
+          <li>Prefere trials gratuitos antes de contratar</li>
+          <li>Influenciado por cases de sucesso e G2 reviews</li>
+          <li>Ciclo de venda médio: 45–90 dias</li>
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel panel-accent-orange" style="margin-bottom: 20px;">
+        <h3>📊 Segmentação de Mercado</h3>
+        <div class="bar-chart">
+          <div class="bar-row">
+            <span class="bar-label">Indústria</span>
+            <div class="bar-track"><div class="bar-fill" style="--w:82%"></div></div>
+            <span class="bar-pct">82%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Serviços</span>
+            <div class="bar-track"><div class="bar-fill" style="--w:74%"></div></div>
+            <span class="bar-pct">74%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Varejo</span>
+            <div class="bar-track"><div class="bar-fill" style="--w:65%"></div></div>
+            <span class="bar-pct">65%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Saúde</span>
+            <div class="bar-track"><div class="bar-fill" style="--w:58%"></div></div>
+            <span class="bar-pct">58%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Fintech</span>
+            <div class="bar-track"><div class="bar-fill" style="--w:50%"></div></div>
+            <span class="bar-pct">50%</span>
+          </div>
+        </div>
+        <p style="margin-top:12px; font-size:12px; color:rgba(200,230,247,0.5);">Índice de dor vs. ausência de solução adequada</p>
+      </div>
+      <div class="panel">
+        <h3>🌍 TAM / SAM / SOM</h3>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <div style="text-align:center; flex:1;">
+            <div style="font-family:'Orbitron',sans-serif; font-size:20px; color:var(--cyan);">R$48B</div>
+            <div style="font-size:11px; color:rgba(200,230,247,0.5); margin-top:4px;">TAM — Global</div>
+          </div>
+          <div style="text-align:center; flex:1;">
+            <div style="font-family:'Orbitron',sans-serif; font-size:20px; color:var(--blue);">R$12B</div>
+            <div style="font-size:11px; color:rgba(200,230,247,0.5); margin-top:4px;">SAM — Brasil</div>
+          </div>
+          <div style="text-align:center; flex:1;">
+            <div style="font-family:'Orbitron',sans-serif; font-size:20px; color:var(--purple);">R$1.8B</div>
+            <div style="font-size:11px; color:rgba(200,230,247,0.5); margin-top:4px;">SOM — Alvo 5 anos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ SLIDE 3 ══ -->
+<div class="slide" data-slide="2">
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+
+  <div class="slide-num">// SLIDE 03 — INTELIGÊNCIA PREDITIVA</div>
+  <span class="section-tag">Previsão de Tendências — Diferencial Competitivo</span>
+  <h2 class="slide-title">Antecipando o Futuro do Trabalho</h2>
+
+  <div class="grid-3" style="margin-bottom: 24px;">
+    <div class="panel panel-accent">
+      <h3>📉 Previsão de Turnover</h3>
+      <p>Nossos algoritmos analisam 47 variáveis comportamentais e identificam colaboradores com risco de saída <strong style="color:var(--cyan)">até 90 dias antes</strong> do evento, permitindo ação preventiva. Redução média de 40% no churn interno.</p>
+    </div>
+    <div class="panel panel-accent-purple">
+      <h3>📈 Demanda de Talentos</h3>
+      <p>Cruzando dados de mercado, sazonalidade e metas de negócio, a IA prevê quais <strong style="color:var(--purple)">skills serão críticas</strong> nos próximos 6 meses, otimizando recrutamento e treinamento com antecedência estratégica.</p>
+    </div>
+    <div class="panel panel-accent-orange">
+      <h3>⚡ Produtividade Futura</h3>
+      <p>Modelos de machine learning mapeiam padrões de alta performance e <strong style="color:var(--accent)">preveem gargalos operacionais</strong> antes que impactem resultados, com recomendações automáticas de redistribuição.</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <h3>🔮 Tendências Mapeadas para 2025–2026</h3>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="t-label">TENDÊNCIA 01</div>
+          <p><strong>Work Everywhere:</strong> 73% das empresas adotarão modelos híbridos permanentes. Solutions X já possui módulo de gestão remota com biometria comportamental.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="t-label">TENDÊNCIA 02</div>
+          <p><strong>Wellbeing Analytics:</strong> Saúde mental como KPI corporativo. Nossa IA detecta padrões de burnout antes dos sintomas visíveis.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="t-label">TENDÊNCIA 03</div>
+          <p><strong>Skills Economy:</strong> Gestão por competências substituirá cargos fixos. Nosso mapeamento dinâmico está 2 anos à frente da concorrência.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="display:flex; flex-direction:column; gap:16px;">
+      <h3>⚙️ Motor Preditivo — Como Funciona</h3>
+      <div class="flow" style="flex-direction:column; align-items:flex-start;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="flow-step">Coleta de Dados</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Normalização IA</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Modelo Preditivo</div>
+        </div>
+        <div style="padding-left:20px; color:rgba(0,245,255,0.3); font-size:20px;">↓</div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="flow-step" style="border-color:rgba(123,47,255,0.4); color:var(--purple);">Insight Gerado</div>
+          <div class="flow-arrow" style="color:rgba(123,47,255,0.5);">→</div>
+          <div class="flow-step" style="border-color:rgba(123,47,255,0.4); color:var(--purple);">Alerta ao Gestor</div>
+          <div class="flow-arrow" style="color:rgba(123,47,255,0.5);">→</div>
+          <div class="flow-step" style="border-color:rgba(123,47,255,0.4); color:var(--purple);">Ação Preventiva</div>
+        </div>
+      </div>
+      <div style="margin-top:8px; padding: 14px; background: rgba(0,245,255,0.04); border-radius:6px; border: 1px solid rgba(0,245,255,0.1);">
+        <p style="font-size:13px;"><strong style="color:var(--cyan)">Precisão atual do modelo:</strong> 87.4% em previsão de turnover. <br>Dados treinados em +2M de perfis profissionais brasileiros.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ SLIDE 4 ══ -->
+<div class="slide" data-slide="3">
+  <div class="s1-glow" style="left:-100px; right:auto; top:-50px;"></div>
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+
+  <div class="slide-num">// SLIDE 04 — ATRAÇÃO</div>
+  <span class="section-tag">Estratégia de Atração — Publicidade Programática</span>
+  <h2 class="slide-title">Alcançando o Decisor Certo</h2>
+
+  <div class="grid-2">
+    <div>
+      <div class="panel panel-accent" style="margin-bottom:20px;">
+        <h3>📡 Canais de Publicidade Programática</h3>
+        <ul>
+          <li><strong style="color:var(--cyan)">Google Display Network</strong> — remarketing por intenção de busca ("software RH", "sistema gestão pessoas")</li>
+          <li><strong style="color:var(--cyan)">LinkedIn Ads</strong> — segmentação por cargo (Diretor RH, CHRO), setor e tamanho de empresa</li>
+          <li><strong style="color:var(--cyan)">Meta Business</strong> — lookalike audiences baseadas em clientes atuais</li>
+          <li><strong style="color:var(--cyan)">Programática DSP</strong> (The Trade Desk) — cookieless targeting via ID gráfico</li>
+          <li><strong style="color:var(--cyan)">CTV/Streaming</strong> — anúncios em vídeo no Globoplay e Amazon Prime B2B</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>🎯 Segmentação Ideal</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
+          <span style="background:rgba(0,100,255,0.15); border:1px solid rgba(0,100,255,0.3); border-radius:4px; padding:4px 10px; font-size:12px; color:#7ab3ff;">Diretor de RH</span>
+          <span style="background:rgba(0,100,255,0.15); border:1px solid rgba(0,100,255,0.3); border-radius:4px; padding:4px 10px; font-size:12px; color:#7ab3ff;">CHRO</span>
+          <span style="background:rgba(0,100,255,0.15); border:1px solid rgba(0,100,255,0.3); border-radius:4px; padding:4px 10px; font-size:12px; color:#7ab3ff;">CEO PME</span>
+          <span style="background:rgba(0,100,255,0.15); border:1px solid rgba(0,100,255,0.3); border-radius:4px; padding:4px 10px; font-size:12px; color:#7ab3ff;">Gerente de Pessoas</span>
+          <span style="background:rgba(0,100,255,0.15); border:1px solid rgba(0,100,255,0.3); border-radius:4px; padding:4px 10px; font-size:12px; color:#7ab3ff;">100–5.000 func.</span>
+          <span style="background:rgba(0,100,255,0.15); border:1px solid rgba(0,100,255,0.3); border-radius:4px; padding:4px 10px; font-size:12px; color:#7ab3ff;">Brasil + LATAM</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel panel-accent-orange">
+        <h3>🎬 Anúncio em Vídeo — Roteiro</h3>
+        <div class="video-mock">
+          <div class="video-bg"></div>
+          <div class="play-btn">▶</div>
+          <div class="video-label">▶ SOLUTIONS X — AD 30s</div>
+          <div class="video-dur">0:30</div>
+        </div>
+        <div style="margin-top:16px;">
+          <div class="timeline" style="padding-left:20px;">
+            <div class="timeline-item" style="margin-bottom:12px;">
+              <div class="t-label">0–5s — HOOK</div>
+              <p>"Você perdeu seu melhor colaborador essa semana. Você sabia?"</p>
+            </div>
+            <div class="timeline-item" style="margin-bottom:12px;">
+              <div class="t-label">5–15s — PROBLEMA</div>
+              <p>Imagens de gestores sobrecarregados, planilhas, reuniões sem conclusão.</p>
+            </div>
+            <div class="timeline-item" style="margin-bottom:12px;">
+              <div class="t-label">15–25s — SOLUÇÃO</div>
+              <p>Dashboard Solutions X em ação: alertas preditivos, automações, decisões em segundos.</p>
+            </div>
+            <div class="timeline-item" style="margin-bottom:0;">
+              <div class="t-label">25–30s — CTA</div>
+              <p>"Teste grátis 30 dias. Sem cartão. Sem risco." → solutionsx.com.br</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ SLIDE 5 ══ -->
+<div class="slide" data-slide="4">
+  <div class="s2-glow" style="right:-100px; left:auto; top:-50px; bottom:auto;"></div>
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+
+  <div class="slide-num">// SLIDE 05 — ENGAJAMENTO</div>
+  <span class="section-tag">Orgânico — Copy + Automatização + Neuromarketing</span>
+  <h2 class="slide-title">Convertendo Atenção em Clientes</h2>
+
+  <div class="grid-2">
+    <div>
+      <div class="panel panel-accent" style="margin-bottom:20px;">
+        <h3>📝 Post LinkedIn — Estrutura AIDA</h3>
+        <div class="post-mock">
+          <div class="post-header">
+            <div class="post-avatar">SX</div>
+            <div>
+              <div class="post-handle">Solutions X — RH Inteligente</div>
+              <div class="post-sub">Software • 12.847 seguidores</div>
+            </div>
+          </div>
+          <div class="post-body">
+            <div class="post-hook">⚠️ 1 em cada 3 colaboradores está pensando em sair da sua empresa AGORA.</div>
+            <br>
+            <strong style="color:var(--accent);">[ATENÇÃO]</strong> Seu RH sabe quem é esse colaborador?<br><br>
+            A maioria das empresas descobre o problema <em>depois</em> da carta de demissão.<br><br>
+            <strong style="color:var(--cyan);">[INTERESSE]</strong> A Solutions X identifica o risco de saída até 3 meses antes — com 87% de precisão.<br><br>
+            <strong>[DESEJO]</strong> Imagine receber um alerta hoje: "João tem 89% de chance de sair em 60 dias." E poder agir agora.<br><br>
+            <strong style="color:var(--accent);">[AÇÃO]</strong> → Clique e veja como funciona gratuitamente.
+            <div class="post-cta">ATIVAR PERÍODO GRÁTIS →</div>
+          </div>
+          <div class="post-stats">
+            <span>❤️ 847</span><span>💬 134</span><span>🔄 289</span><span>👁 24.5K</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-accent-purple">
+        <h3>🧠 Gatilhos de Neuromarketing Usados</h3>
+        <ul>
+          <li><strong>Loss Aversion:</strong> medo de perder o melhor talento ativa decisão</li>
+          <li><strong>Social Proof:</strong> dados de precisão geram credibilidade imediata</li>
+          <li><strong>Escassez cognitiva:</strong> "1 em 3" cria urgência sem pressão direta</li>
+          <li><strong>Concretude:</strong> exemplo "João" humaniza o dado abstrato</li>
+          <li><strong>Contraste:</strong> "antes vs depois" ativa sistema límbico</li>
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h3>🤖 Fluxo de Automatização — Chatbot → Carrinho</h3>
+        <div style="margin-top:12px;">
+          <div class="flow" style="flex-direction:column; align-items:stretch; gap:12px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="flow-step" style="flex:1; text-align:left; padding:12px;">👆 <strong>Lead clica no post</strong><br><span style="font-size:11px; opacity:.7">CTA no LinkedIn/Instagram</span></div>
+            </div>
+            <div style="text-align:center; color:var(--cyan); font-size:18px;">↓</div>
+            <div class="flow-step" style="text-align:left; padding:12px;">💬 <strong>Chatbot ativa no WhatsApp/Web</strong><br><span style="font-size:11px; opacity:.7">"Olá! Vi que você tem interesse em reduzir o turnover…"</span></div>
+            <div style="text-align:center; color:var(--cyan); font-size:18px;">↓</div>
+            <div class="flow-step" style="text-align:left; padding:12px; border-color:rgba(255,107,53,0.4); color:var(--accent);">🏷️ <strong>Qualificação automática</strong><br><span style="font-size:11px; opacity:.7">3 perguntas: setor, nº funcionários, maior dor atual</span></div>
+            <div style="text-align:center; color:var(--accent); font-size:18px;">↓</div>
+            <div class="flow-step" style="text-align:left; padding:12px; border-color:rgba(255,107,53,0.4); color:var(--accent);">📊 <strong>Demo personalizada enviada</strong><br><span style="font-size:11px; opacity:.7">Vídeo curto com caso de uso específico do setor do lead</span></div>
+            <div style="text-align:center; color:var(--accent); font-size:18px;">↓</div>
+            <div class="flow-step" style="text-align:left; padding:12px; border-color:rgba(0,245,255,0.5); background:rgba(0,245,255,0.07);">🛒 <strong>Link direto ao carrinho + trial</strong><br><span style="font-size:11px; opacity:.7">Com urgência: "Oferta especial válida por 24h"</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ SLIDE 6 ══ -->
+<div class="slide" data-slide="5">
+  <div class="s1-glow" style="bottom:-100px; top:auto; left:50%; transform:translateX(-50%);"></div>
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+
+  <div class="slide-num">// SLIDE 06 — RETENÇÃO</div>
+  <span class="section-tag">Experiência do Cliente — CX & Customer Success</span>
+  <h2 class="slide-title">O Marketing Não Acaba na Venda</h2>
+
+  <div class="grid-2" style="margin-bottom:24px;">
+    <div class="panel panel-accent">
+      <h3>🗺️ Jornada Pós-Venda</h3>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="t-label">DIA 01 — ONBOARDING</div>
+          <p>E-mail de boas-vindas + vídeo de setup personalizado por setor. Acesso ao Customer Success dedicado via chat.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="t-label">DIA 07 — CHECK-IN</div>
+          <p>NPS automático. Identificação de features não utilizadas. Convite para webinar de melhores práticas.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="t-label">DIA 30 — HEALTH SCORE</div>
+          <p>IA calcula "Customer Health Score". Se abaixo de 70%, CS proativo entra em contato antes do churn.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="t-label">DIA 90 — UPSELL</div>
+          <p>Relatório automático de ROI gerado. Proposta de upgrade personalizada baseada no uso real.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:20px;">
+      <div class="panel panel-accent-orange">
+        <h3>🛡️ Prevenção de Churn — Suporte Inteligente</h3>
+        <ul>
+          <li>IA monitora logins, features ativas e tempo de sessão diariamente</li>
+          <li>Alertas automáticos para CS quando uso cai 30%+ em 7 dias</li>
+          <li>Chatbot 24/7 com base de conhecimento de +500 artigos</li>
+          <li>SLA de resposta humana: 2h úteis (Plano Pro) / 30min (Enterprise)</li>
+          <li>Programa de fidelidade: desconto progressivo por tempo de contrato</li>
+        </ul>
+      </div>
+
+      <div class="panel panel-accent-purple">
+        <h3>🏆 Programa de Customer Success</h3>
+        <div class="kpi-row" style="margin-top:8px;">
+          <div class="kpi-card">
+            <div class="kpi-val" style="font-size:22px;">94%</div>
+            <div class="kpi-label">Retenção anual</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-val" style="font-size:22px;">4.8</div>
+            <div class="kpi-label">CSAT médio</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-val" style="font-size:22px;">62</div>
+            <div class="kpi-label">NPS score</div>
+          </div>
+        </div>
+        <p style="margin-top:14px; font-size:13px; opacity:.7;">Meta: atingir 97% retenção e NPS 70 até Q4 2025 via automação de CX e CS proativo.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ SLIDE 7 ══ -->
+<div class="slide" data-slide="6" style="border-bottom:none;">
+  <div class="s2-glow" style="right:-50px; top:50%; transform:translateY(-50%);"></div>
+  <div class="corner-tl"></div>
+  <div class="corner-br"></div>
+
+  <div class="slide-num">// SLIDE 07 — VISÃO DE FUTURO</div>
+  <span class="section-tag">KPIs & Melhoria Contínua — Data-Driven</span>
+  <h2 class="slide-title">Crescimento Sustentável por Dados</h2>
+
+  <div class="grid-2">
+    <div>
+      <div class="panel panel-accent" style="margin-bottom:20px;">
+        <h3>📊 KPIs Monitorados por IA Analytics</h3>
+        <div class="grid-2" style="gap:12px; margin-top:10px;">
+          <div style="background:rgba(0,100,255,0.07); border:1px solid rgba(0,100,255,0.2); border-radius:6px; padding:12px;">
+            <div style="font-size:11px; letter-spacing:2px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin-bottom:6px;">MARKETING</div>
+            <ul style="list-style:none; font-size:12px; line-height:2;">
+              <li>📌 CAC (Custo de Aquisição)</li>
+              <li>📌 ROAS por canal</li>
+              <li>📌 Taxa de conversão funil</li>
+              <li>📌 LTV / CAC ratio</li>
+            </ul>
+          </div>
+          <div style="background:rgba(123,47,255,0.07); border:1px solid rgba(123,47,255,0.2); border-radius:6px; padding:12px;">
+            <div style="font-size:11px; letter-spacing:2px; color:var(--purple); font-family:'Orbitron',sans-serif; margin-bottom:6px;">PRODUTO</div>
+            <ul style="list-style:none; font-size:12px; line-height:2;">
+              <li>📌 DAU / MAU</li>
+              <li>📌 Feature adoption rate</li>
+              <li>📌 Time to value</li>
+              <li>📌 Bugs / crash rate</li>
+            </ul>
+          </div>
+          <div style="background:rgba(255,107,53,0.07); border:1px solid rgba(255,107,53,0.2); border-radius:6px; padding:12px;">
+            <div style="font-size:11px; letter-spacing:2px; color:var(--accent); font-family:'Orbitron',sans-serif; margin-bottom:6px;">NEGÓCIO</div>
+            <ul style="list-style:none; font-size:12px; line-height:2;">
+              <li>📌 MRR & ARR</li>
+              <li>📌 Churn rate mensal</li>
+              <li>📌 Net Revenue Retention</li>
+              <li>📌 Payback period</li>
+            </ul>
+          </div>
+          <div style="background:rgba(0,245,255,0.05); border:1px solid rgba(0,245,255,0.15); border-radius:6px; padding:12px;">
+            <div style="font-size:11px; letter-spacing:2px; color:var(--cyan); font-family:'Orbitron',sans-serif; margin-bottom:6px;">CLIENTE</div>
+            <ul style="list-style:none; font-size:12px; line-height:2;">
+              <li>📌 NPS mensal</li>
+              <li>📌 CSAT por touchpoint</li>
+              <li>📌 Health Score médio</li>
+              <li>📌 Expansion MRR</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:20px;">
+      <div class="panel panel-accent-purple">
+        <h3>🔁 Loop de Melhoria Contínua</h3>
+        <div class="flow" style="justify-content:flex-start; flex-wrap:wrap; gap:10px; margin-top:12px;">
+          <div class="flow-step" style="min-width:80px; font-size:11px; padding:8px;">📥 Dados<br>coletados</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step" style="min-width:80px; font-size:11px; padding:8px; border-color:rgba(123,47,255,0.4); color:var(--purple);">🧠 IA<br>analisa</div>
+          <div class="flow-arrow" style="color:rgba(123,47,255,0.5);">→</div>
+          <div class="flow-step" style="min-width:80px; font-size:11px; padding:8px; border-color:rgba(123,47,255,0.4); color:var(--purple);">💡 Insights<br>gerados</div>
+        </div>
+        <div style="padding-left:40px; color:rgba(0,245,255,0.3); font-size:18px; margin:4px 0;">↓</div>
+        <div class="flow" style="justify-content:flex-start; flex-wrap:wrap; gap:10px;">
+          <div class="flow-step" style="min-width:80px; font-size:11px; padding:8px; border-color:rgba(255,107,53,0.4); color:var(--accent);">🚀 Deploy<br>melhoria</div>
+          <div class="flow-arrow" style="color:rgba(255,107,53,0.5);">←</div>
+          <div class="flow-step" style="min-width:80px; font-size:11px; padding:8px; border-color:rgba(255,107,53,0.4); color:var(--accent);">🧪 Teste<br>A/B</div>
+          <div class="flow-arrow" style="color:rgba(255,107,53,0.5);">←</div>
+          <div class="flow-step" style="min-width:80px; font-size:11px; padding:8px; border-color:rgba(255,107,53,0.4); color:var(--accent);">📋 Plano de<br>ação</div>
+        </div>
+        <p style="margin-top:14px; font-size:13px; opacity:.7;">Ciclo de retroalimentação a cada 2 semanas (sprints ágeis). Relatórios executivos automáticos toda segunda-feira às 7h.</p>
+      </div>
+
+      <div class="panel">
+        <h3>🎯 Metas 12 Meses</h3>
+        <div class="bar-chart" style="margin-top:10px;">
+          <div class="bar-row">
+            <span class="bar-label" style="font-size:11px;">MRR Alvo</span>
+            <div class="bar-track"><div class="bar-fill" style="--w:100%; background: linear-gradient(90deg,var(--purple),var(--cyan));"></div></div>
+            <span class="bar-pct" style="font-size:11px; width:80px; color:var(--cyan);">R$500K</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label" style="font-size:11px;">Clientes</span>
+            <div class="bar-track"><div class="bar-fill" style="--w:75%; background: linear-gradient(90deg,var(--purple),var(--cyan));"></div></div>
+            <span class="bar-pct" style="font-size:11px; width:80px; color:var(--cyan);">500 contas</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label" style="font-size:11px;">NPS</span>
+            <div class="bar-track"><div class="bar-fill" style="--w:70%; background: linear-gradient(90deg,var(--purple),var(--cyan));"></div></div>
+            <span class="bar-pct" style="font-size:11px; width:80px; color:var(--cyan);">> 70</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label" style="font-size:11px;">Retenção</span>
+            <div class="bar-track"><div class="bar-fill" style="--w:97%; background: linear-gradient(90deg,var(--purple),var(--cyan));"></div></div>
+            <span class="bar-pct" style="font-size:11px; width:80px; color:var(--cyan);">97%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Final CTA -->
+      <div style="text-align:center; padding: 24px; background: linear-gradient(135deg, rgba(0,100,255,0.1), rgba(0,245,255,0.05)); border: 1px solid var(--border); border-radius: 8px;">
+        <div style="font-family:'Orbitron',sans-serif; font-size:22px; font-weight:900; background: linear-gradient(135deg, #fff, var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:10px;">SOLUTIONS X</div>
+        <p style="font-size:13px; color:rgba(200,230,247,0.7); margin-bottom:16px;">O futuro do RH começa com dados. Comece hoje.</p>
+        <div style="display:inline-block; background: linear-gradient(135deg, var(--cyan), var(--blue)); color: var(--dark); font-family:'Orbitron',sans-serif; font-size:11px; font-weight:700; letter-spacing:2px; padding:12px 28px; border-radius:4px;">solutionsx.com.br</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /slides-container -->
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.nav-dot');
+
+function scrollToSlide(i) {
+  slides[i].scrollIntoView({ behavior: 'smooth' });
+}
+
+// Highlight active dot on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const idx = [...slides].indexOf(e.target);
+      dots.forEach(d => d.classList.remove('active'));
+      if (dots[idx]) dots[idx].classList.add('active');
+    }
+  });
+}, { threshold: 0.4 });
+
+slides.forEach(s => observer.observe(s));
+
+// PDF Export
+async function exportPDF(btn) {
+  btn.disabled = true;
+  btn.textContent = '⏳ Gerando PDF...';
+  
+  const el = document.getElementById('slides');
+  const opt = {
+    margin: 0,
+    filename: 'SolutionsX_Pitch_Deck.pdf',
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: { scale: 1.5, useCORS: true, backgroundColor: '#020814' },
+    jsPDF: { unit: 'px', format: [1280, 720], orientation: 'landscape' },
+    pagebreak: { mode: ['css', 'legacy'], before: '.slide' }
+  };
+
+  try {
+    await html2pdf().set(opt).from(el).save();
+  } catch(e) {
+    console.error(e);
+    alert('Erro ao gerar PDF. Tente usar Ctrl+P para imprimir.');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '⬇ Exportar PDF';
+}
+</script>
+</body>
+</html>
